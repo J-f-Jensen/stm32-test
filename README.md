@@ -1,7 +1,5 @@
-# stm32-inverter
-Copy of main firmware from the Huebner inverter projec, this version is a work in progress with only the raw inverter functionality. More to come when I have tested it
-
-Please use the software on https://github.com/jsphuebner/
+# stm32-test
+Used for test and learning before implementing in real projects
 
 # Compiling
 You will need the arm-none-eabi toolchain: https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
@@ -9,14 +7,8 @@ The only external depedency is libopencm3 which I forked. You can download and b
 
 `make get-deps`
 
-Now you can compile stm32-inverter in FOC verison by typing
+Now you can compile stm32-test by typing
 
 `make`
-
-or
-
-`CONTROL=SINE make`
-
-to build the SINE version for synchronous motors.
 
 And upload it to your board using a JTAG/SWD adapter, the updater.py script or the esp8266 web interface
