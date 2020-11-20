@@ -576,14 +576,14 @@ static void ProcessCan0x287Message(uint32_t data[2])
 {
     int opmode = Param::GetInt(Param::opmode);
 
-    uint16_t rawCanTorquePercent = data[0] >> 16 & 0xFFFF;
+    uint16_t rawCanTorquePercent = ((data[0] >> 16 & 0xFF) * 256) + (data[0] >> 24 & 0xFF) ;
     uint8_t rawCanStatus = data[1] >> 16 & 0xFF;
 
     // Debug start
     uint32_t canData[2];
 
-    canData[0] = rawCanTorquePercent;
-    canData[1] = rawCanStatus;
+    canData[0] = rawCanTorquePercent|rawCanTorquePercent-9999 << 16;
+    canData[1] = rawCanStatus << 16;
 
     can->Send(0x111, canData);
     // Debug end
