@@ -419,7 +419,7 @@ static void Ms100Task(void)
 
    Param::SetFlt(Param::uac, uac);
    #endif // CONTROL
-
+/*
     uint32_t canData[2];
 
     // CAN ID: 289, Torque: A and B I use IDC instead, motor speed: C and D, High voltage E and F
@@ -436,6 +436,30 @@ static void Ms100Task(void)
     canData[0] = 0x01 | 0x02 << 8 | 0x0000 << 16;
     canData[1] = 0;
     can->Send(0x299, canData);
+    */
+
+    // 
+    uint16_t speedTmp = 0x9080;
+    uint16_t idcTmp = 0x1234;
+    uint16_t udcTmp = 0x4567;
+
+    // CAN ID: 289, Torque: A and B, I use IDC instead. Motor speed: C and D, High voltage E and F
+    uint8_t canData[8] = { (uint8_t) (idcTmp >> 8), (uint8_t) (idcTmp & 0xFF), (uint8_t) (speedTmp >> 8), (uint8_t) (speedTmp & 0xFF), (uint8_t) (udcTmp >> 8), (uint8_t) (udcTmp & 0xFF), 0, 0 };
+
+    can->Send(0x289, (uint32_t*) canData);
+
+    // CAN ID: 299, motor temp: A, inv. temp: B, Rest = 0
+    canData[0] = (uint8_t) (Param::Get(Param::tmpm) + 40);
+    canData[1] = (uint8_t) (Param::Get(Param::tmphs) + 40);
+    canData[2] = 0;
+    canData[3] = 0;
+    canData[4] = 0;
+    canData[5] = 0;
+    canData[6] = 0;
+    canData[7] = 0;
+
+    can->Send(0x299, (uint32_t*)canData);
+
 
    //if (Param::GetInt(Param::canperiod) == CAN_PERIOD_100MS)
       can->SendAll();
@@ -576,7 +600,7 @@ static void ProcessCan0x287Message(uint32_t data[2])
 {
     int opmode = Param::GetInt(Param::opmode);
 
-    uint16_t rawCanTorquePercent = ((data[0] >> 16 & 0xFF) * 256) + (data[0] >> 24 & 0xFF) ;
+    uint16_t rawCanTorquePercent = data[0] >> 8 & 0xFF00 | data[0] >> 24; // C*256+D
     uint8_t rawCanStatus = data[1] >> 16 & 0xFF;
 
     // Debug start
